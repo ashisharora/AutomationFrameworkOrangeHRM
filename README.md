@@ -1,2 +1,51 @@
 # AutomationFrameworkOrangeHRM
 Automation Framework with C# and Selenium for OrangeHRM
+private static void SetupExtentReport()
+{
+    try
+    {
+        var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        Console.WriteLine($"Base Directory: {baseDirectory}");
+        TestContext.Progress.WriteLine($"Base Directory: {baseDirectory}");
+
+        var testResultsDir = Path.Combine(baseDirectory, "TestResults");
+        Directory.CreateDirectory(testResultsDir);
+        Console.WriteLine($"TestResults Directory Created: {testResultsDir}");
+        TestContext.Progress.WriteLine($"TestResults Directory Created: {testResultsDir}");
+
+        ReportPath = Path.Combine(testResultsDir, $"ExtentReport_{DateTime.Now:yyyyMMdd_HHmmss}.html");
+        Console.WriteLine($"Report Path Set: {ReportPath}");
+        TestContext.Progress.WriteLine($"Report Path Set: {ReportPath}");
+
+        var spark = new ExtentSparkReporter(ReportPath);
+        Console.WriteLine("ExtentSparkReporter created");
+        TestContext.Progress.WriteLine("ExtentSparkReporter created");
+
+        // Configure report settings
+        spark.Config.Theme = Theme.Dark;
+        spark.Config.DocumentTitle = "OTPCMS Test Execution Report";
+        spark.Config.ReportName = "Automation Test Results";
+
+        _extent = new ExtentReports();
+        _extent.AttachReporter(spark);
+        Console.WriteLine("Reporter attached to Extent Reports");
+        TestContext.Progress.WriteLine("Reporter attached to Extent Reports");
+
+        // Add system info
+        _extent.AddSystemInfo("Framework Version", ".NET 8.0");
+        _extent.AddSystemInfo("Environment", GetCurrentEnvironment());
+        _extent.AddSystemInfo("Browser", "Chrome");
+        _extent.AddSystemInfo("OS", Environment.OSVersion.ToString());
+        _extent.AddSystemInfo("Machine", Environment.MachineName);
+
+        Console.WriteLine("ExtentReport initialization completed");
+        TestContext.Progress.WriteLine("ExtentReport initialization completed");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error in SetupExtentReport: {ex.Message}\nStack Trace: {ex.StackTrace}");
+        TestContext.Progress.WriteLine($"Error in SetupExtentReport: {ex.Message}\nStack Trace: {ex.StackTrace}");
+        throw;
+    }
+}
+
